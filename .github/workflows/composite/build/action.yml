@@ -12,10 +12,42 @@ inputs:
 runs:
   using: "composite"
   steps:
-  - name: Compose build ${{ inputs.service }}
-    shell: bash
-    run: sudo -E docker-compose build ${{ inputs.service }}
-    working-directory: ./src
-    env:
-      TAG: ${{ env.BRANCH }}
-      REGISTRY: ${{ inputs.registry_endpoint }}
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+        role-duration-seconds: 900
+        aws-region: eu-north-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Compose build ${{ inputs.service }}
+      shell: bash
+      run: sudo -E docker build -f ${{ inputs.service }}
+      working-directory: ./src
+      env:
+        TAG: ${{ env.BRANCH }}
+        REGISTRY: ${{ inputs.registry_endpoint }}
+# name: "Build for PRe"
+# description: "Builds a docker image without pushing"
+
+# inputs:
+#   service:
+#     description: "Service to build"
+#     required: true
+#   registry_endpoint:
+#     description: "Image registry repo e.g. myacr.azureacr.io/eshop"
+#     required: true
+
+# runs:
+#   using: "composite"
+#   steps:
+#   - name: Compose build ${{ inputs.service }}
+#     shell: bash
+#     run: sudo -E docker-compose build ${{ inputs.service }}
+#     working-directory: ./src
+#     env:
+#       TAG: ${{ env.BRANCH }}
+#       REGISTRY: ${{ inputs.registry_endpoint }}
