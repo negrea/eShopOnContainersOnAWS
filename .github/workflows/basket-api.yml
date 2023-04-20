@@ -55,8 +55,8 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
         IMAGE: basket.api
       run: |
-        docker build -t $REGISTRY/$REPOSITORY/$IMAGE:$IMAGE_TAG . -f Services/Basket/Basket.API/Dockerfile
-        docker push $REGISTRY/$REPOSITORY/$IMAGE:$IMAGE_TAG
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG . -f Services/Basket/Basket.API/Dockerfile
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
       working-directory: ./src
 
 #name: basket-api
